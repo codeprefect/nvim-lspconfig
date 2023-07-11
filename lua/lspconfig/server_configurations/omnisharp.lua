@@ -37,6 +37,29 @@ return {
     -- true
     analyze_open_documents_only = false,
 
+    -- Configure inlay hints rules
+    -- default to same values from Roslyn
+    inlay_hints = {
+      enable_for_parameters = true,
+      for_literal_parameters = true,
+      for_indexer_parameters = true,
+      for_object_creation_parameters = true,
+      for_other_parameters = true,
+      enable_for_types = true,
+      for_implicit_variable_types = true,
+      for_lambda_parameter_types = true,
+      for_implicit_object_creation = true,
+      suppress_for_parameters_that_differ_only_by_suffix = false,
+      suppress_for_parameters_that_match_method_intent = false,
+      suppress_for_parameters_that_match_argument_name = false,
+    },
+
+    script = {
+      enabled = true,
+      default_target_framework = "net6.0",
+      enable_script_nuGet_references = false,
+    },
+
     filetypes = { 'cs', 'vb' },
     root_dir = function(fname)
       return util.root_pattern '*.sln'(fname) or util.root_pattern '*.csproj'(fname)
@@ -79,6 +102,60 @@ return {
 
       if new_config.analyze_open_documents_only then
         table.insert(new_config.cmd, 'RoslynExtensionsOptions:AnalyzeOpenDocumentsOnly=true')
+      end
+
+      if new_config.inlay_hints.enable_for_parameters then
+        table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:EnableForParameters=true')
+        if new_config.inlay_hints.for_literal_parameters then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:ForLiteralParameters=true')
+        end
+  
+        if new_config.inlay_hints.for_indexer_parameters then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:ForIndexerParameters=true')
+        end
+  
+        if new_config.inlay_hints.for_object_creation_parameters then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:ForObjectCreationParameters=true')
+        end
+  
+        if new_config.inlay_hints.for_other_parameters then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:ForOtherParameters=true')
+        end
+
+        if new_config.inlay_hints.suppress_for_parameters_that_differ_only_by_suffix == false then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:SuppressForParametersThatDifferOnlyBySuffix=false')
+        end
+  
+        if new_config.inlay_hints.suppress_for_parameters_that_match_method_intent == false then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:SuppressForParametersThatMatchMethodIntent=false')
+        end
+  
+        if new_config.inlay_hints.suppress_for_parameters_that_match_argument_name == false then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:SuppressForParametersThatMatchArgumentName=false')
+        end
+      end
+
+      if new_config.inlay_hints.enable_for_types then
+        table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:EnableForTypes=true')
+        if new_config.inlay_hints.for_implicit_variable_types then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:ForImplicitVariableTypes=true')
+        end
+  
+        if new_config.inlay_hints.for_lambda_parameter_types then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:ForLambdaParameterTypes=true')
+        end
+  
+        if new_config.inlay_hints.for_implicit_object_creation then
+          table.insert(new_config.cmd, 'RoslynExtensionsOptions:InlayHintsOptions:ForImplicitObjectCreation=true')
+        end
+      end
+
+      if new_config.scripts.enabled then
+        table.insert(new_config.cmd, 'Script:Enabled=true')
+        table.insert(new_config.cmd, 'Script:DefaultTargetFramework=' .. new_config.script.default_target_framework)
+        if (new_config.script.enable_script_nuget_references) then
+          table.insert(new_config.cmd, 'Script:EnableScriptNuGetReferences=true')
+        end
       end
 
       -- Disable the handling of multiple workspaces in a single instance
